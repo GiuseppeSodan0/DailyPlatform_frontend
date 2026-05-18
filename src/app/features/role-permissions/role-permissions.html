@@ -1,0 +1,50 @@
+<app-layout>
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-4">
+      <a routerLink="/roles" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" title="Torna ai ruoli">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+      </a>
+      <div>
+        <h2 class="text-2xl font-semibold text-gray-800">Permessi ruolo</h2>
+        <p class="text-sm text-gray-500 mt-0.5">{{ roleName() }}</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <a routerLink="/roles" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Annulla</a>
+      <button (click)="save()" [disabled]="saving()"
+        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 rounded-lg transition-colors">
+        {{ saving() ? 'Salvataggio...' : 'Salva' }}
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-12 text-gray-400">Caricamento...</div>
+  } @else {
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+        <p class="text-sm text-gray-600">Seleziona i permessi da assegnare al ruolo</p>
+      </div>
+      <div class="p-6 max-h-[600px] overflow-y-auto space-y-6">
+        @for (group of groupedPermissions(); track group.entityName) {
+          <div>
+            <h4 class="text-sm font-semibold text-gray-800 mb-3 border-b border-gray-100 pb-2">{{ group.entityName }}</h4>
+            <div class="flex flex-wrap gap-2">
+              @for (item of group.items; track item.permission.id) {
+                <label class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors text-sm"
+                  [class.border-indigo-200]="selectedIds().has(item.permission.id)"
+                  [class.bg-indigo-50]="selectedIds().has(item.permission.id)"
+                  [class.border-gray-200]="!selectedIds().has(item.permission.id)"
+                  [class.hover:bg-gray-50]="!selectedIds().has(item.permission.id)">
+                  <input type="checkbox" [checked]="selectedIds().has(item.permission.id)" (change)="toggle(item.permission.id)"
+                    class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                  <span class="text-gray-700">{{ item.action }}</span>
+                </label>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</app-layout>
