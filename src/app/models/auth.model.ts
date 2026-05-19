@@ -16,33 +16,45 @@ export interface AuthResponse {
   token: string;
   type: string;
   userId: number;
+  uid?: string;
+  uuid?: string;
   email: string;
   name: string;
   surname: string;
   roles: string[];
   permissions: string[];
+  companyId?: number;
+  companyName?: string;
+  superAdmin?: boolean;
 }
 
 export interface MeResponse {
   id: number;
+  uid?: string;
+  uuid?: string;
   email: string;
   name: string;
   surname: string;
   status: string;
-  companyId: number;
-  companyName: string;
+  companyId?: number;
+  companyName?: string;
+  superAdmin?: boolean;
   roles: string[];
   permissions: string[];
+  avatar?: string;
 }
 
 export interface AuthUser {
   id: number;
+  uid?: string;
+  uuid?: string;
   email: string;
   name: string;
   surname: string;
   status: string;
-  companyId: number;
-  companyName: string;
+  companyId?: number;
+  companyName?: string;
+  superAdmin?: boolean;
   roles: string[];
   permissions: string[];
   avatar?: string;

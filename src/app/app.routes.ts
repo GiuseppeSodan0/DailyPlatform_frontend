@@ -28,6 +28,18 @@ export const routes: Routes = [
     loadComponent: () => import('./features/users/users').then((m) => m.Users),
   },
   {
+    path: 'users/new',
+    canActivate: [authGuard, permissionGuard],
+    data: { permissions: ['PAGE_USER_CREATE'] },
+    loadComponent: () => import('./features/users/user-create-page/user-create-page').then((m) => m.UserCreatePage),
+  },
+  {
+    path: 'users/:id/edit',
+    canActivate: [authGuard, permissionGuard],
+    data: { permissions: ['PAGE_USER_EDIT'] },
+    loadComponent: () => import('./features/users/user-edit-page/user-edit-page').then((m) => m.UserEditPage),
+  },
+  {
     path: 'roles/:id/permissions',
     canActivate: [authGuard, permissionGuard],
     data: { permissions: ['ACTION_ASSIGN_PERMISSION'] },
@@ -38,6 +50,12 @@ export const routes: Routes = [
     canActivate: [authGuard, permissionGuard],
     data: { permissions: ['PAGE_ROLE_VIEW'] },
     loadComponent: () => import('./features/roles/roles').then((m) => m.Roles),
+  },
+  {
+    path: 'roles/new',
+    canActivate: [authGuard, permissionGuard],
+    data: { permissions: ['PAGE_ROLE_CREATE'] },
+    loadComponent: () => import('./features/roles/role-create-page/role-create-page').then((m) => m.RoleCreatePage),
   },
   {
     path: 'companies',

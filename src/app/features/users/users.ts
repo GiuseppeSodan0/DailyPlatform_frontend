@@ -1,9 +1,10 @@
 import { Component, signal, computed, inject, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AppLayout } from '../../layout/app-layout/app-layout';
-import { UserService, CreateUserRequest, UpdateUserRequest } from '../../core/services/user.service';
+import { UserService } from '../../core/services/user.service';
 import { UserImportExportService } from '../../core/services/user-import-export.service';
 import { CompanyService } from '../../core/services/company.service';
 import { RoleService } from '../../core/services/role.service';
@@ -19,10 +20,11 @@ import { NoUnderscorePipe } from '../../shared/pipes/no-underscore';
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [AppLayout, ReactiveFormsModule, FormsModule, HasPermissionDirective, ConfirmModal, ModalWrapper, NoUnderscorePipe],
+  imports: [AppLayout, ReactiveFormsModule, FormsModule, RouterLink, HasPermissionDirective, ConfirmModal, ModalWrapper, NoUnderscorePipe],
   templateUrl: './users.html',
 })
 export class Users implements OnInit {
+  private router = inject(Router);
   private userService = inject(UserService);
   private importExportService = inject(UserImportExportService);
   private companyService = inject(CompanyService);
@@ -44,22 +46,29 @@ export class Users implements OnInit {
   loadingRoles = signal(false);
   saving = signal(false);
 
-  modalMode: 'create' | 'edit' | 'detail' | 'roles' | null = null;
+  modalMode: 'roles' | null = null;
   selectedUser: User | null = null;
   deleteTarget: User | null = null;
 
+  selectedIds = signal(new Set<number>());
+
+  isAllPageSelected = computed(() => {
+    const page = this.pagedUsers();
+    if (page.length === 0) return false;
+    return page.every((u) => this.selectedIds().has(u.id));
+  });
+
+  isIndeterminate = computed(() => {
+    const page = this.pagedUsers();
+    if (page.length === 0) return false;
+    const selected = page.filter((u) => this.selectedIds().has(u.id));
+    return selected.length > 0 && selected.length < page.length;
+  });
+
+  selectedUsers = computed(() => this.users().filter((u) => this.selectedIds().has(u.id)));
+
   currentPage = signal(1);
   pageSize = 10;
-
-  userForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
-    name: ['', Validators.required],
-    surname: ['', Validators.required],
-    status: ['ACTIVE', Validators.required],
-    companyId: [null as number | null],
-    roleIds: [[] as number[]],
-  });
 
   roleAssignForm = this.fb.group({
     roleIds: [[] as number[]],
@@ -161,44 +170,8 @@ export class Users implements OnInit {
     return company?.factoryName || `ID ${companyId}`;
   }
 
-  openDetail(user: User): void {
-    this.selectedUser = user;
-    this.modalMode = 'detail';
-  }
-
-  openCreate(): void {
-    this.modalMode = 'create';
-    this.selectedUser = null;
-    this.userForm.reset({
-      email: '',
-      password: '',
-      name: '',
-      surname: '',
-      status: 'ACTIVE',
-      companyId: null,
-      roleIds: [],
-    });
-    this.userForm.get('password')?.enable();
-    this.userForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
-  }
-
-  openEdit(user: User): void {
-    this.modalMode = 'edit';
-    this.selectedUser = user;
-    const roleIds = this.allRoles()
-      .filter((r) => user.roles.includes(r.name))
-      .map((r) => r.id);
-    this.userForm.patchValue({
-      email: user.email,
-      password: '',
-      name: user.name,
-      surname: user.surname,
-      status: user.status,
-      companyId: user.companyId,
-      roleIds,
-    });
-    this.userForm.get('password')?.clearValidators();
-    this.userForm.get('password')?.setValue('');
+  navigateToEdit(id: number): void {
+    this.router.navigate(['/users', id, 'edit']);
   }
 
   openRoles(user: User): void {
@@ -212,41 +185,6 @@ export class Users implements OnInit {
   closeModal(): void {
     this.modalMode = null;
     this.selectedUser = null;
-  }
-
-  saveUser(): void {
-    if (this.userForm.invalid) return;
-    this.saving.set(true);
-
-    if (this.modalMode === 'create') {
-      const data: CreateUserRequest = {
-        email: this.userForm.value.email!,
-        password: this.userForm.value.password!,
-        name: this.userForm.value.name!,
-        surname: this.userForm.value.surname!,
-        status: this.userForm.value.status || undefined,
-        companyId: this.userForm.value.companyId ?? undefined,
-        roleIds: this.userForm.value.roleIds ?? undefined,
-      };
-      this.userService.create(data).subscribe({
-        next: () => { this.toast.success('Utente creato con successo'); this.closeModal(); this.loadUsers(); this.saving.set(false); },
-        error: (e: HttpErrorResponse) => { this.toast.error(e.error?.message || 'Errore durante la creazione'); this.saving.set(false); },
-      });
-    } else if (this.modalMode === 'edit' && this.selectedUser) {
-      const data: UpdateUserRequest = {};
-      const raw = this.userForm.value;
-      if (raw.email) data.email = raw.email;
-      if (raw.name) data.name = raw.name;
-      if (raw.surname) data.surname = raw.surname;
-      if (raw.status) data.status = raw.status;
-      if (raw.password) data.password = raw.password;
-      if (raw.companyId !== null && raw.companyId !== undefined) data.companyId = raw.companyId;
-      if (raw.roleIds) data.roleIds = raw.roleIds;
-      this.userService.update(this.selectedUser.id, data).subscribe({
-        next: () => { this.toast.success('Utente aggiornato con successo'); this.closeModal(); this.loadUsers(); this.saving.set(false); },
-        error: (e: HttpErrorResponse) => { this.toast.error(e.error?.message || 'Errore durante l\'aggiornamento'); this.saving.set(false); },
-      });
-    }
   }
 
   saveRoles(): void {
@@ -269,14 +207,6 @@ export class Users implements OnInit {
       next: () => { this.toast.success('Utente eliminato con successo'); this.deleteTarget = null; this.loadUsers(); },
       error: (e: HttpErrorResponse) => { this.toast.error(e.error?.message || 'Errore durante l\'eliminazione'); this.deleteTarget = null; },
     });
-  }
-
-  toggleRoleInForm(roleId: number): void {
-    const current = this.userForm.value.roleIds ?? [];
-    const updated = current.includes(roleId)
-      ? current.filter((id) => id !== roleId)
-      : [...current, roleId];
-    this.userForm.patchValue({ roleIds: updated });
   }
 
   toggleRoleInAssignForm(roleId: number): void {
@@ -341,6 +271,28 @@ export class Users implements OnInit {
       },
     );
     input.value = '';
+  }
+
+  toggleSelection(id: number): void {
+    this.selectedIds.update((set) => {
+      const next = new Set(set);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  toggleAllSelection(): void {
+    this.selectedIds.update((set) => {
+      const next = new Set(set);
+      const page = this.pagedUsers();
+      const allSelected = page.every((u) => next.has(u.id));
+      if (allSelected) {
+        page.forEach((u) => next.delete(u.id));
+      } else {
+        page.forEach((u) => next.add(u.id));
+      }
+      return next;
+    });
   }
 
   readonly Math = Math;

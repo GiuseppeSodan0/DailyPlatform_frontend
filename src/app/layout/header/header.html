@@ -23,11 +23,17 @@
         </div>
       </button>
       @if (showProfileMenu()) {
-        <div class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50"
+        <div class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50"
           (click)="$event.stopPropagation()">
           <div class="px-4 py-3 border-b border-gray-100">
             <p class="text-sm font-medium text-gray-900">{{ user.name }} {{ user.surname }}</p>
             <p class="text-xs text-gray-500 mt-0.5">{{ user.email }}</p>
+            @if (user.companyName) {
+              <p class="text-xs text-gray-400 mt-1">{{ user.companyName }}</p>
+            }
+            @if (user.superAdmin) {
+              <span class="inline-block mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700">Super Admin</span>
+            }
           </div>
           <a routerLink="/profile" (click)="showProfileMenu.set(false)"
             class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">

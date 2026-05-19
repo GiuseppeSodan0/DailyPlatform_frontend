@@ -40,6 +40,10 @@ export class UserService {
     return this.http.get<User>(`${environment.apiUrl}/users/${id}`);
   }
 
+  getByUuid(uuid: string): Observable<User> {
+    return this.http.get<User>(`${environment.apiUrl}/users/by-uuid/${uuid}`);
+  }
+
   create(data: CreateUserRequest): Observable<User> {
     return this.http.post<User>(`${environment.apiUrl}/users`, data);
   }

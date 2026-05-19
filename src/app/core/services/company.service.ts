@@ -58,6 +58,10 @@ export class CompanyService {
     return this.http.get<Company>(`${environment.apiUrl}/companies/${id}`);
   }
 
+  getByUuid(uuid: string): Observable<Company> {
+    return this.http.get<Company>(`${environment.apiUrl}/companies/by-uuid/${uuid}`);
+  }
+
   create(data: CreateCompanyRequest): Observable<Company> {
     return this.http.post<Company>(`${environment.apiUrl}/companies`, data);
   }

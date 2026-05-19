@@ -7,6 +7,7 @@ import { Role } from '../../models/role.model';
 export interface CreateRoleRequest {
   name: string;
   description?: string;
+  scope?: string;
   companyId?: number;
 }
 
@@ -30,6 +31,10 @@ export class RoleService {
 
   getById(id: number): Observable<Role> {
     return this.http.get<Role>(`${environment.apiUrl}/roles/${id}`);
+  }
+
+  getByUuid(uuid: string): Observable<Role> {
+    return this.http.get<Role>(`${environment.apiUrl}/roles/by-uuid/${uuid}`);
   }
 
   create(data: CreateRoleRequest): Observable<Role> {

@@ -2,6 +2,8 @@ import { User } from './user.model';
 
 export interface UserExportDto {
   id: number;
+  uid?: string;
+  uuid?: string;
   email: string;
   name: string;
   surname: string;

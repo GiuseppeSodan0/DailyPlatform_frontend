@@ -90,6 +90,7 @@ export class Companies implements OnInit {
     } else if (this.modalMode === 'edit' && this.selectedCompany) {
       const data: UpdateCompanyRequest = {};
       Object.keys(raw).forEach((key) => {
+        if (key === 'uid' || key === 'uuid') return;
         const val = (raw as any)[key];
         if (val !== null && val !== undefined && val !== '') (data as any)[key] = val;
       });

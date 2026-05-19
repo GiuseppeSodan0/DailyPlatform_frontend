@@ -1,7 +1,7 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -12,9 +12,9 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class ForgotPassword {
   form;
-  loading = false;
-  sent = false;
-  error: string | null = null;
+  loading = signal(false);
+  sent = signal(false);
+  error = signal<string | null>(null);
 
   constructor(
     private fb: FormBuilder,
@@ -26,18 +26,14 @@ export class ForgotPassword {
   }
 
   onSubmit(): void {
-    if (this.form.invalid || this.loading) return;
-    this.loading = true;
+    if (this.form.invalid || this.loading()) return;
+    this.loading.set(true);
 
-    this.auth.requestPasswordReset(this.form.getRawValue()).subscribe({
-      next: () => {
-        this.loading = false;
-        this.sent = true;
-      },
-      error: () => {
-        this.loading = false;
-        this.sent = true;
-      },
+    this.auth.requestPasswordReset(this.form.getRawValue()).pipe(
+      finalize(() => this.loading.set(false)),
+    ).subscribe({
+      next: () => this.sent.set(true),
+      error: () => this.sent.set(true),
     });
   }
 }

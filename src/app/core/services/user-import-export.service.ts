@@ -25,6 +25,8 @@ export class UserImportExportService {
   toExportDto(user: User): UserExportDto {
     return {
       id: user.id,
+      uid: user.uid,
+      uuid: user.uuid,
       email: user.email,
       name: user.name,
       surname: user.surname,

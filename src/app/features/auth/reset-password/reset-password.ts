@@ -1,7 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 
 export function passwordsMatchValidator(group: AbstractControl): ValidationErrors | null {
@@ -20,9 +21,9 @@ export function passwordsMatchValidator(group: AbstractControl): ValidationError
 export class ResetPassword {
   form;
   token: string | null;
-  loading = false;
-  success = false;
-  error: string | null = null;
+  loading = signal(false);
+  success = signal(false);
+  error = signal<string | null>(null);
 
   constructor(
     private fb: FormBuilder,
@@ -37,21 +38,19 @@ export class ResetPassword {
   }
 
   onSubmit(): void {
-    if (this.form.invalid || this.loading || !this.token) return;
-    this.loading = true;
-    this.error = null;
+    if (this.form.invalid || this.loading() || !this.token) return;
+    this.loading.set(true);
+    this.error.set(null);
 
     this.auth.resetPassword({
       token: this.token,
       newPassword: this.form.getRawValue().newPassword,
-    }).subscribe({
-      next: () => {
-        this.loading = false;
-        this.success = true;
-      },
+    }).pipe(
+      finalize(() => this.loading.set(false)),
+    ).subscribe({
+      next: () => this.success.set(true),
       error: (err: HttpErrorResponse) => {
-        this.loading = false;
-        this.error = err.error?.message || 'Errore durante il reset della password';
+        this.error.set(err.error?.message || 'Errore durante il reset della password');
       },
     });
   }

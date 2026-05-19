@@ -1,0 +1,44 @@
+<button
+  type="button"
+  (click)="toggle()"
+  class="fixed top-32 z-50 flex items-center justify-center w-7 h-14 bg-white border border-gray-200 rounded-l-lg shadow-md text-gray-400 hover:text-gray-600 hover:shadow-lg transition-all duration-200"
+  [class.right-0]="!open()"
+  [class.right-80]="open()"
+  [title]="open() ? 'Chiudi' : 'Identificativi'"
+>
+  @if (open()) {
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+      <path d="M9 18l6-6-6-6"/>
+    </svg>
+  } @else {
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+      <path d="M15 18l-6-6 6-6"/>
+    </svg>
+  }
+</button>
+
+@if (open()) {
+  <div class="fixed inset-0 z-40 bg-black/30" (click)="close()"></div>
+}
+
+<aside
+  class="fixed top-0 right-0 z-40 h-full w-80 bg-white border-l border-gray-200 shadow-xl transform transition-transform duration-200 flex flex-col"
+  [class.translate-x-0]="open()"
+  [class.translate-x-full]="!open()"
+>
+  <div class="h-16 flex items-center px-6 border-b border-gray-200">
+    <span class="text-base font-semibold text-gray-800">Identificativi</span>
+  </div>
+
+  <div class="flex-1 p-5 space-y-4 overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+      <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">UID</div>
+      <div class="text-base font-mono text-gray-900 break-all">{{ user()?.uid ?? auth.user()?.uid ?? '—' }}</div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+      <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">UUID</div>
+      <div class="text-sm font-mono text-gray-900 break-all">{{ user()?.uuid ?? auth.user()?.uuid ?? '—' }}</div>
+    </div>
+  </div>
+</aside>

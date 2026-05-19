@@ -9,6 +9,7 @@ interface NavItem {
   route: string;
   icon: string;
   permission?: string;
+  superAdminOnly?: boolean;
 }
 
 @Component({
@@ -25,11 +26,12 @@ export class Sidebar {
     { label: 'Dashboard', route: '/dashboard', icon: 'dashboard', permission: 'PAGE_DASHBOARD_VIEW' },
     { label: 'Utenti', route: '/users', icon: 'users', permission: 'PAGE_USER_VIEW' },
     { label: 'Ruoli', route: '/roles', icon: 'roles', permission: 'PAGE_ROLE_VIEW' },
-    { label: 'Aziende', route: '/companies', icon: 'companies', permission: 'PAGE_COMPANY_VIEW' },
+    { label: 'Aziende', route: '/companies', icon: 'companies', permission: 'PAGE_COMPANY_VIEW', superAdminOnly: true },
   ];
 
   visibleItems = computed(() =>
     this.navItems.filter((item) => {
+      if (item.superAdminOnly && !this.auth.isSuperAdmin()) return false;
       if (!item.permission) return true;
       return this.auth.hasPermission(item.permission);
     }),

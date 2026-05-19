@@ -16,6 +16,8 @@ export class AuthService {
   readonly user = computed(() => this.userSignal());
   readonly roles = computed(() => this.userSignal()?.roles ?? []);
   readonly permissions = computed(() => this.userSignal()?.permissions ?? []);
+  readonly isSuperAdmin = computed(() => this.userSignal()?.superAdmin ?? false);
+  readonly companyName = computed(() => this.userSignal()?.companyName ?? null);
 
   constructor(private http: HttpClient) {}
 

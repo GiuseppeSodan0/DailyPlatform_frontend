@@ -3,11 +3,13 @@
     <p class="text-6xl font-bold text-gray-300">403</p>
     <h1 class="mt-4 text-xl font-semibold text-gray-800">Accesso negato</h1>
     <p class="mt-2 text-sm text-gray-500">Non hai i permessi per accedere a questa pagina.</p>
-    <a
-      routerLink="/dashboard"
-      class="mt-6 inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg px-5 py-2.5 transition-colors"
-    >
-      Torna alla dashboard
-    </a>
+    @if (auth.isAuthenticated()) {
+      <a
+        routerLink="/dashboard"
+        class="mt-6 inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg px-5 py-2.5 transition-colors"
+      >
+        Torna alla dashboard
+      </a>
+    }
   </div>
 </div>

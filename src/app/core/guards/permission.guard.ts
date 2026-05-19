@@ -1,11 +1,14 @@
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { ActivatedRouteSnapshot } from '@angular/router';
+import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-export const permissionGuard = (route: ActivatedRouteSnapshot) => {
+export const permissionGuard = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   const auth = inject(AuthService);
   const router = inject(Router);
+
+  if (!auth.isAuthenticated()) {
+    return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
+  }
 
   const requiredPermissions = route.data?.['permissions'] as string[] | undefined;
   const mode = (route.data?.['permissionMode'] as 'all' | 'any') ?? 'any';
@@ -19,5 +22,5 @@ export const permissionGuard = (route: ActivatedRouteSnapshot) => {
       ? auth.hasAllPermissions(requiredPermissions)
       : auth.hasAnyPermission(requiredPermissions);
 
-  return has ? true : router.parseUrl('/forbidden');
+  return has ? true : router.createUrlTree(['/forbidden']);
 };
