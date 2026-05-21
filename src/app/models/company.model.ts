@@ -10,6 +10,13 @@ export interface Company {
   pec: string;
   telefono: string;
   responsabile: string;
+  sedeOperativa: string;
+  indirizzo: string;
+  civico: number;
+  settore: string;
+  medicoCompetente: string;
+  rspp: string;
+  consulente: string;
   status: string;
   note: string;
   cap: string;

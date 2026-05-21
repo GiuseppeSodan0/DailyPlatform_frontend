@@ -15,6 +15,13 @@ export interface CreateCompanyRequest {
   pec?: string;
   telefono?: string;
   responsabile?: string;
+  sedeOperativa?: string;
+  indirizzo?: string;
+  civico?: number;
+  settore?: string;
+  medicoCompetente?: string;
+  rspp?: string;
+  consulente?: string;
   note?: string;
   cap?: string;
   comune?: string;
@@ -36,6 +43,13 @@ export interface UpdateCompanyRequest {
   pec?: string;
   telefono?: string;
   responsabile?: string;
+  sedeOperativa?: string;
+  indirizzo?: string;
+  civico?: number;
+  settore?: string;
+  medicoCompetente?: string;
+  rspp?: string;
+  consulente?: string;
   note?: string;
   cap?: string;
   comune?: string;

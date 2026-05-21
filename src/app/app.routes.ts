@@ -58,6 +58,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/roles/role-create-page/role-create-page').then((m) => m.RoleCreatePage),
   },
   {
+    path: 'companies/new',
+    canActivate: [authGuard, permissionGuard],
+    data: { permissions: ['PAGE_COMPANY_CREATE'] },
+    loadComponent: () => import('./features/companies/company-create-page/company-create-page').then((m) => m.CompanyCreatePage),
+  },
+  {
     path: 'companies',
     canActivate: [authGuard, permissionGuard],
     data: { permissions: ['PAGE_COMPANY_VIEW'] },
