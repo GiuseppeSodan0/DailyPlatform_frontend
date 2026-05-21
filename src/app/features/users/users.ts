@@ -68,7 +68,7 @@ export class Users implements OnInit {
   selectedUsers = computed(() => this.users().filter((u) => this.selectedIds().has(u.id)));
 
   currentPage = signal(1);
-  pageSize = 10;
+  pageSize = 15;
 
   roleAssignForm = this.fb.group({
     roleIds: [[] as number[]],

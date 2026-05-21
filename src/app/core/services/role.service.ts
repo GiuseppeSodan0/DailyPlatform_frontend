@@ -9,12 +9,14 @@ export interface CreateRoleRequest {
   description?: string;
   scope?: string;
   companyId?: number;
+  parentId?: number;
 }
 
 export interface UpdateRoleRequest {
   name?: string;
   description?: string;
   status?: string;
+  parentId?: number | null;
 }
 
 export interface AssignPermissionsRequest {

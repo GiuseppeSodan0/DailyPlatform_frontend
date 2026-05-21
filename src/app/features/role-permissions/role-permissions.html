@@ -7,6 +7,9 @@
       <div>
         <h2 class="text-2xl font-semibold text-gray-800">Permessi ruolo</h2>
         <p class="text-sm text-gray-500 mt-0.5">{{ roleName() }}</p>
+        @if (parentRoleName()) {
+          <p class="text-xs text-gray-400 mt-0.5">Ruolo padre: <span class="font-medium">{{ parentRoleName() }}</span> — i permessi disponibili sono ereditati dal padre</p>
+        }
       </div>
     </div>
     <div class="flex items-center gap-3">
@@ -23,28 +26,47 @@
   } @else {
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
-        <p class="text-sm text-gray-600">Seleziona i permessi da assegnare al ruolo</p>
+        <p class="text-sm text-gray-600">
+          @if (parentRoleName()) {
+            <span>Il ruolo <span class="font-medium">{{ roleName() }}</span> eredita i permessi da <span class="font-medium">{{ parentRoleName() }}</span>. Tutti i permessi del padre sono preselezionati: puoi solo deselezionare quelli che non servono.</span>
+          } @else {
+            Seleziona i permessi da assegnare al ruolo
+          }
+        </p>
       </div>
-      <div class="p-6 max-h-[600px] overflow-y-auto space-y-6">
-        @for (group of groupedPermissions(); track group.entityName) {
-          <div>
-            <h4 class="text-sm font-semibold text-gray-800 mb-3 border-b border-gray-100 pb-2">{{ group.entityName }}</h4>
-            <div class="flex flex-wrap gap-2">
-              @for (item of group.items; track item.permission.id) {
-                <label class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors text-sm"
-                  [class.border-indigo-200]="selectedIds().has(item.permission.id)"
-                  [class.bg-indigo-50]="selectedIds().has(item.permission.id)"
-                  [class.border-gray-200]="!selectedIds().has(item.permission.id)"
-                  [class.hover:bg-gray-50]="!selectedIds().has(item.permission.id)">
-                  <input type="checkbox" [checked]="selectedIds().has(item.permission.id)" (change)="toggle(item.permission.id)"
-                    class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
-                  <span class="text-gray-700">{{ item.action }}</span>
-                </label>
+      @if (loadingParent()) {
+        <div class="p-6 text-center text-sm text-gray-400">Caricamento permessi del padre...</div>
+      } @else {
+        <div class="p-6 max-h-[600px] overflow-y-auto space-y-6">
+          @for (group of groupedPermissions(); track group.entityName) {
+            <div>
+              <h4 class="text-sm font-semibold text-gray-800 mb-3 border-b border-gray-100 pb-2">{{ group.entityName }}</h4>
+              <div class="flex flex-wrap gap-2">
+                @for (item of group.items; track item.permission.id) {
+                  <label class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors text-sm"
+                    [class.border-indigo-200]="selectedIds().has(item.permission.id)"
+                    [class.bg-indigo-50]="selectedIds().has(item.permission.id)"
+                    [class.border-gray-200]="!selectedIds().has(item.permission.id)"
+                    [class.hover:bg-gray-50]="!selectedIds().has(item.permission.id)">
+                    <input type="checkbox" [checked]="selectedIds().has(item.permission.id)" (change)="toggle(item.permission.id)"
+                      class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                    <span class="text-gray-700">{{ item.action }}</span>
+                  </label>
+                }
+              </div>
+            </div>
+          }
+          @if (groupedPermissions().length === 0 && !loadingParent()) {
+            <div class="text-center py-8 text-gray-400">
+              @if (parentRoleName()) {
+                Il ruolo padre <span class="font-medium">{{ parentRoleName() }}</span> non ha permessi da ereditare.
+              } @else {
+                Nessun permesso disponibile.
               }
             </div>
-          </div>
-        }
-      </div>
+          }
+        </div>
+      }
     </div>
   }
 </app-layout>

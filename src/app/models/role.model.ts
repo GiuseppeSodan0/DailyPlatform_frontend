@@ -10,5 +10,6 @@ export interface Role {
   scope: 'GLOBAL' | 'TENANT';
   status: string;
   companyId?: number;
+  parentId?: number;
   permissions: Permission[];
 }

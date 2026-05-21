@@ -23,6 +23,16 @@ export class Companies implements OnInit {
   companies = signal<Company[]>([]);
   loading = signal(false);
 
+  currentPage = signal(1);
+  readonly pageSize = 15;
+
+  pagedCompanies = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize;
+    return this.companies().slice(start, start + this.pageSize);
+  });
+
+  totalPages = computed(() => Math.max(1, Math.ceil(this.companies().length / this.pageSize)));
+
   modalMode: 'create' | 'edit' | null = null;
   selectedCompany: Company | null = null;
   saving = signal(false);
@@ -56,9 +66,15 @@ export class Companies implements OnInit {
   private loadCompanies(): void {
     this.loading.set(true);
     this.companyService.getAll().subscribe({
-      next: (c) => { this.companies.set(c); this.loading.set(false); },
+      next: (c) => { this.companies.set(c); this.currentPage.set(1); this.loading.set(false); },
       error: () => this.loading.set(false),
     });
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
   }
 
   openCreate(): void {

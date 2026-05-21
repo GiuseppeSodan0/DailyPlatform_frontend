@@ -1,6 +1,7 @@
 import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { AppLayout } from '../../layout/app-layout/app-layout';
+import { AuthService } from '../../core/services/auth.service';
 import { RoleService } from '../../core/services/role.service';
 import { ToastService } from '../../core/services/toast.service';
 import { Role } from '../../models/role.model';
@@ -18,12 +19,18 @@ import { RoleForm } from './role-form/role-form';
 })
 export class Roles implements OnInit {
   private router = inject(Router);
+  private auth = inject(AuthService);
   private roleService = inject(RoleService);
   private toast = inject(ToastService);
+
+  isCompanyUser = computed(() => !!this.auth.user()?.companyId);
 
   roles = signal<Role[]>([]);
   loading = signal(false);
   activeTab = signal<'all' | 'global' | 'tenant'>('all');
+
+  currentPage = signal(1);
+  readonly pageSize = 15;
 
   filteredRoles = computed(() => {
     const tab = this.activeTab();
@@ -34,6 +41,13 @@ export class Roles implements OnInit {
       return tab === 'tenant' ? !!r.companyId : !r.companyId;
     });
   });
+
+  pagedRoles = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize;
+    return this.filteredRoles().slice(start, start + this.pageSize);
+  });
+
+  totalPages = computed(() => Math.max(1, Math.ceil(this.filteredRoles().length / this.pageSize)));
 
   modalMode: 'edit' | null = null;
   selectedRole: Role | null = null;
@@ -54,6 +68,13 @@ export class Roles implements OnInit {
 
   setActiveTab(tab: 'all' | 'global' | 'tenant'): void {
     this.activeTab.set(tab);
+    this.currentPage.set(1);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
   }
 
   openEdit(role: Role): void {
