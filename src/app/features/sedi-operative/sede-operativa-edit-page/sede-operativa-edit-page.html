@@ -1,0 +1,25 @@
+<app-layout>
+  @if (loading()) {
+    <div class="flex items-center justify-center py-20">
+      <svg class="animate-spin h-8 w-8 text-blue-600" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+    </div>
+  } @else if (notFound()) {
+    <div class="text-center py-20">
+      <h2 class="text-xl font-semibold text-gray-700">Sede operativa non trovata</h2>
+      <p class="text-gray-500 mt-2">La sede operativa richiesta non esiste o è stata eliminata.</p>
+      <button (click)="goBack()" class="mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">Torna all'elenco</button>
+    </div>
+  } @else if (error(); as msg) {
+    <div class="text-center py-20">
+      <p class="text-red-500">{{ msg }}</p>
+      <button (click)="goBack()" class="mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">Torna all'elenco</button>
+    </div>
+  } @else {
+    <div class="flex items-center justify-between flex-wrap gap-4">
+      <h2 class="text-2xl font-semibold text-gray-800">Modifica sede operativa</h2>
+    </div>
+    <div class="mt-6 bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
+      <app-sede-operativa-form mode="edit" [companyId]="companyId" [sede]="sede()" (saved)="onSaved()" (cancelled)="onCancelled()" />
+    </div>
+  }
+</app-layout>

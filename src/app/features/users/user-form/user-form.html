@@ -32,7 +32,7 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-      @if (auth.isSuperAdmin()) {
+      @if (auth.hasPermission('CAN_VIEW_ALL_COMPANIES')) {
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Azienda</label>
           <select formControlName="companyId" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-white">
@@ -56,6 +56,32 @@
         </select>
       </div>
     </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Sede Operativa <span class="text-red-500">*</span></label>
+        <select formControlName="sedeOperativaId" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-white">
+          <option [ngValue]="null">Seleziona sede operativa</option>
+          @for (sede of allSedi(); track sede.id) {
+            <option [ngValue]="sede.id">{{ sede.nomeSede }} — {{ sede.comune }}, {{ sede.indirizzo }} {{ sede.civico }}</option>
+          }
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Reparto <span class="text-red-500">*</span></label>
+        <select formControlName="reparto"
+          [disabled]="!userForm.value.sedeOperativaId"
+          class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-white disabled:bg-gray-100 disabled:cursor-not-allowed">
+          <option [ngValue]="null">Seleziona reparto</option>
+          @for (r of repartoOptions; track r) {
+            <option [ngValue]="r">{{ r | noUnderscore }}</option>
+          }
+        </select>
+        @if (userForm.get('reparto')?.invalid && userForm.get('reparto')?.touched) {
+          <p class="text-red-500 text-xs mt-1">Campo obbligatorio</p>
+        }
+      </div>
+    </div>
   </div>
 
   <!-- Ruoli -->
@@ -63,28 +89,53 @@
     <h3 class="text-base font-semibold text-gray-800 mb-4">Ruoli</h3>
     @if (loadingRoles()) {
       <div class="flex gap-2 flex-wrap">
-        @for (_ of [].constructor(3); track _) {
+        @for (_ of [].constructor(3); track $index) {
           <div class="h-8 w-24 bg-gray-100 rounded-lg animate-pulse"></div>
         }
       </div>
     } @else {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
         @for (role of allRoles(); track role.id) {
-          <label class="flex items-center gap-2 p-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors"
+          <div class="flex items-center gap-2 p-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
             [class.border-indigo-200]="(userForm.value.roleIds ?? []).includes(role.id)"
             [class.bg-indigo-50]="(userForm.value.roleIds ?? []).includes(role.id)">
-            <input type="checkbox" [checked]="(userForm.value.roleIds ?? []).includes(role.id)" (change)="toggleRole(role.id)" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-gray-900 truncate">{{ role.name | noUnderscore }}</p>
-              @if (role.description) { <p class="text-xs text-gray-500 truncate">{{ role.description }}</p> }
-            </div>
-          </label>
+            <label class="flex items-center gap-2 cursor-pointer flex-1 min-w-0">
+              <input type="checkbox" [checked]="(userForm.value.roleIds ?? []).includes(role.id)" (change)="toggleRole(role.id)" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+              <div class="min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">{{ role.name | noUnderscore }}</p>
+                @if (role.description) { <p class="text-xs text-gray-500 truncate">{{ role.description }}</p> }
+              </div>
+            </label>
+          </div>
         }
         @if (allRoles().length === 0) {
           <p class="text-sm text-gray-400 col-span-full">Nessun ruolo disponibile</p>
         }
       </div>
     }
+  </div>
+
+  <!-- Profili -->
+  <div class="pt-6 border-t border-gray-200">
+    <h3 class="text-base font-semibold text-gray-800 mb-4">Profili</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+      @for (profile of allProfiles(); track profile.id) {
+        <div class="flex items-center gap-2 p-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+          [class.border-blue-200]="(userForm.value.profileIds ?? []).includes(profile.id)"
+          [class.bg-blue-50]="(userForm.value.profileIds ?? []).includes(profile.id)">
+          <label class="flex items-center gap-2 cursor-pointer flex-1 min-w-0">
+            <input type="checkbox" [checked]="(userForm.value.profileIds ?? []).includes(profile.id)" (change)="toggleProfile(profile.id)" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-gray-900 truncate">{{ profile.name }}</p>
+              <p class="text-xs text-gray-500 truncate">{{ profile.code }}</p>
+            </div>
+          </label>
+        </div>
+      }
+      @if (allProfiles().length === 0) {
+        <p class="text-sm text-gray-400 col-span-full">Nessun profilo disponibile</p>
+      }
+    </div>
   </div>
 
   <div class="flex justify-end gap-3 pt-2">

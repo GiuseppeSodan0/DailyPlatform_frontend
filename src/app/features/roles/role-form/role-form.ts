@@ -28,31 +28,9 @@ export class RoleForm implements OnInit {
   cancelled = output<void>();
 
   companies = signal<any[]>([]);
-  allRoles = signal<Role[]>([]);
 
-  private readonly SYSTEM_ROLE_NAMES = ['super admin', 'admin', 'user'];
-
-  isSystemAdmin = computed(() =>
-    this.authService.roles().some(r => {
-      const normalized = r.toLowerCase().trim().replace(/_/g, ' ');
-      return this.SYSTEM_ROLE_NAMES.includes(normalized);
-    })
-  );
-
-  isCompanyUser = computed(() => !!this.authService.user()?.companyId);
-
-  parentRoleName = computed(() => {
-    const id = this.roleForm.get('parentId')?.value;
-    if (!id) return null;
-    return this.allRoles().find(r => r.id === id)?.name ?? null;
-  });
-
-  availableParentRoles = computed(() =>
-    this.allRoles().filter(r => {
-      if (this.mode() === 'edit' && this.role() && r.id === this.role()!.id) return false;
-      return true;
-    })
-  );
+  canCreateGlobalRole = computed(() => this.authService.hasPermission('ACTION_CREATE_GLOBAL_ROLE'));
+  canViewAllCompanies = computed(() => this.authService.hasPermission('CAN_VIEW_ALL_COMPANIES'));
 
   saving = signal(false);
 
@@ -61,17 +39,15 @@ export class RoleForm implements OnInit {
     description: [''],
     scope: ['GLOBAL'],
     companyId: [null as number | null],
-    parentId: [null as number | null],
   });
 
   ngOnInit(): void {
     this.loadCompanies();
-    this.loadRoles();
 
     const source = this.mode() === 'edit' ? this.role() : null;
 
     if (!source) {
-      const defaultScope = this.isSystemAdmin() ? 'GLOBAL' : 'TENANT';
+      const defaultScope = this.canCreateGlobalRole() ? 'GLOBAL' : 'TENANT';
       this.roleForm.patchValue({ scope: defaultScope });
     }
 
@@ -81,7 +57,6 @@ export class RoleForm implements OnInit {
         description: source.description || '',
         scope: source.scope,
         companyId: source.companyId ?? null,
-        parentId: source.parentId ?? null,
       });
     }
   }
@@ -89,12 +64,6 @@ export class RoleForm implements OnInit {
   private loadCompanies(): void {
     this.companyService.getAll().subscribe({
       next: (c) => this.companies.set(c),
-    });
-  }
-
-  private loadRoles(): void {
-    this.roleService.getAll().subscribe({
-      next: (r) => this.allRoles.set(r),
     });
   }
 
@@ -108,22 +77,15 @@ export class RoleForm implements OnInit {
         name: formValue.name!,
         description: formValue.description || undefined,
         scope: formValue.scope || undefined,
-        parentId: formValue.parentId ?? undefined,
       };
       if (formValue.scope === 'TENANT' && formValue.companyId) {
         data.companyId = formValue.companyId;
       }
       this.roleService.create(data).subscribe({
-        next: (created) => {
+        next: () => {
           this.toast.success('Ruolo creato');
           this.saving.set(false);
-          if (data.parentId) {
-            this.router.navigate(['/roles', created.id, 'permissions'], {
-              queryParams: { parentId: data.parentId },
-            });
-          } else {
-            this.saved.emit();
-          }
+          this.saved.emit();
         },
         error: (e: HttpErrorResponse) => {
           this.toast.error(e.error?.message || 'Errore creazione');

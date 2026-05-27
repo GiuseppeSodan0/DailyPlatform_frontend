@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
   standalone: true,
 })
 export class NoUnderscorePipe implements PipeTransform {
-  transform(value: string): string {
-    return value.replace(/_/g, ' ');
+  transform(value: unknown): string {
+    return typeof value === 'string' ? value.replace(/_/g, ' ') : '';
   }
 }

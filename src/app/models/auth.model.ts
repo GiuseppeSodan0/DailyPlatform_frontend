@@ -22,6 +22,7 @@ export interface AuthResponse {
   name: string;
   surname: string;
   roles: string[];
+  profiles: string[];
   permissions: string[];
   companyId?: number;
   companyName?: string;
@@ -40,6 +41,7 @@ export interface MeResponse {
   companyName?: string;
   superAdmin?: boolean;
   roles: string[];
+  profiles: string[];
   permissions: string[];
   avatar?: string;
 }
@@ -56,6 +58,7 @@ export interface AuthUser {
   companyName?: string;
   superAdmin?: boolean;
   roles: string[];
+  profiles: string[];
   permissions: string[];
   avatar?: string;
 }

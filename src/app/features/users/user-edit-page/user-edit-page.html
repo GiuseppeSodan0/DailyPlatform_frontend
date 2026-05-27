@@ -13,7 +13,7 @@
     <div class="mt-6">
       <div class="space-y-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          @for (_ of [].constructor(4); track _) {
+          @for (_ of [].constructor(4); track $index) {
             <div>
               <div class="h-3 bg-gray-100 rounded animate-pulse w-16 mb-2"></div>
               <div class="h-10 bg-gray-100 rounded-lg animate-pulse w-full"></div>
@@ -22,7 +22,7 @@
         </div>
         <div class="h-3 bg-gray-100 rounded animate-pulse w-12 mb-2"></div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-          @for (_ of [].constructor(3); track _) {
+          @for (_ of [].constructor(3); track $index) {
             <div class="h-12 bg-gray-100 rounded-lg animate-pulse"></div>
           }
         </div>

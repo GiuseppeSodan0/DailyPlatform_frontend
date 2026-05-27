@@ -1,32 +1,167 @@
 <form [formGroup]="form" (ngSubmit)="save()">
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Ragione sociale</label><input formControlName="factoryName" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Sede operativa</label><input formControlName="sedeOperativa" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" formControlName="email" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">PEC</label><input type="email" formControlName="pec" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Telefono</label><input formControlName="telefono" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Partita IVA</label><input type="number" formControlName="partitaIva" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Codice Fiscale</label><input formControlName="codiceFiscale" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Codice Univoco</label><input formControlName="codiceUnivoco" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Responsabile</label><input formControlName="responsabile" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Indirizzo</label><input formControlName="indirizzo" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Civico</label><input type="number" formControlName="civico" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">CAP</label><input formControlName="cap" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Comune</label><input formControlName="comune" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Provincia</label><input formControlName="provincia" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Regione</label><input formControlName="regione" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Nazione</label><input formControlName="nazione" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Settore</label><input formControlName="settore" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Medico Competente</label><input formControlName="medicoCompetente" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">RSPP</label><input formControlName="rspp" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Consulente</label><input formControlName="consulente" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">Codice ATECO</label><input formControlName="codiceAteco" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">N. Dipendenti</label><input type="number" formControlName="numDipendenti" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">UID</label><input formControlName="uid" readonly class="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-500 cursor-not-allowed" /></div>
-    <div><label class="block text-sm font-medium text-gray-700 mb-1">UUID</label><input formControlName="uuid" readonly class="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-500 cursor-not-allowed" /></div>
-    <div class="sm:col-span-2 lg:col-span-3"><label class="block text-sm font-medium text-gray-700 mb-1">Note</label><textarea formControlName="note" rows="2" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"></textarea></div>
-  </div>
-  <div class="flex justify-end gap-3 pt-4 mt-4 border-t border-gray-100">
+  <!-- Dati anagrafici -->
+  <fieldset class="border border-gray-200 rounded-xl p-6">
+    <legend class="text-lg font-semibold text-gray-800 px-2">Dati anagrafici</legend>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Ragione sociale</label>
+        <input formControlName="factoryName" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input type="email" formControlName="email" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Partita IVA</label>
+        <input type="number" formControlName="partitaIva" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">PEC</label>
+        <input type="email" formControlName="pec" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Codice Fiscale</label>
+        <input formControlName="codiceFiscale" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Telefono</label>
+        <input formControlName="telefono" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Codice Univoco</label>
+        <input formControlName="codiceUnivoco" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Settore</label>
+        <input formControlName="settore" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Codice ATECO</label>
+        <input formControlName="codiceAteco" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">N. Dipendenti</label>
+        <input type="number" formControlName="numDipendenti" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- Sede legale -->
+  <fieldset class="border border-gray-200 rounded-xl p-6 mt-6">
+    <legend class="text-lg font-semibold text-gray-800 px-2">Sede legale</legend>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="sm:col-span-2 lg:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Indirizzo</label>
+        <input formControlName="indirizzo" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Civico</label>
+        <input type="number" formControlName="civico" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">CAP</label>
+        <input formControlName="cap" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Comune</label>
+        <input formControlName="comune" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Provincia</label>
+        <input formControlName="provincia" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Regione</label>
+        <input formControlName="regione" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Nazione</label>
+        <input formControlName="nazione" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- Referenti sicurezza -->
+  @if (mode() === 'edit') {
+    <fieldset class="border border-gray-200 rounded-xl p-6 mt-6">
+      <legend class="text-lg font-semibold text-gray-800 px-2">Referenti sicurezza</legend>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Responsabile</label>
+          <app-select
+            placeholder="Seleziona responsabile"
+            [items]="responsabileUsers()"
+            [selectedId]="form.get('responsabile')?.value ?? null"
+            (selectedIdChange)="form.patchValue({ responsabile: $event })"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Medico Competente</label>
+          <app-select
+            placeholder="Seleziona medico competente"
+            [items]="medicoCompetenteUsers()"
+            [selectedId]="form.get('medicoCompetente')?.value ?? null"
+            (selectedIdChange)="form.patchValue({ medicoCompetente: $event })"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">RSPP</label>
+          <app-select
+            placeholder="Seleziona RSPP"
+            [items]="rsppUsers()"
+            [selectedId]="form.get('rspp')?.value ?? null"
+            (selectedIdChange)="form.patchValue({ rspp: $event })"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Consulente</label>
+          <app-select
+            placeholder="Seleziona consulente"
+            [items]="consulenteUsers()"
+            [selectedId]="form.get('consulente')?.value ?? null"
+            (selectedIdChange)="form.patchValue({ consulente: $event })"
+          />
+        </div>
+      </div>
+    </fieldset>
+  }
+
+  <!-- Note -->
+  <fieldset class="border border-gray-200 rounded-xl p-6 mt-6">
+    <legend class="text-lg font-semibold text-gray-800 px-2">Note</legend>
+    <div class="grid grid-cols-1 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Note</label>
+        <textarea formControlName="note" rows="2" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"></textarea>
+      </div>
+    </div>
+  </fieldset>
+
+  @if (mode() === 'create') {
+    <fieldset class="border border-gray-200 rounded-xl p-6 mt-6">
+      <legend class="text-lg font-semibold text-gray-800 px-2">Amministratore</legend>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email admin <span class="text-red-500">*</span></label>
+          <input type="email" formControlName="adminEmail" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder="admin@azienda.it" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password admin <span class="text-red-500">*</span></label>
+          <input type="password" formControlName="adminPassword" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder="Password" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nome admin <span class="text-red-500">*</span></label>
+          <input formControlName="adminName" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder="Mario" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Cognome admin <span class="text-red-500">*</span></label>
+          <input formControlName="adminSurname" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder="Rossi" />
+        </div>
+      </div>
+    </fieldset>
+  }
+
+  <div class="flex justify-end gap-3 pt-4 mt-6 border-t border-gray-100">
     <button type="button" (click)="cancel()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Annulla</button>
     <button type="submit" [disabled]="saving()" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 rounded-lg transition-colors">{{ saving() ? 'Salvataggio...' : 'Salva' }}</button>
   </div>

@@ -1,5 +1,3 @@
-import { Permission } from './permission.model';
-
 export interface Role {
   id: number;
   uid?: string;
@@ -10,6 +8,5 @@ export interface Role {
   scope: 'GLOBAL' | 'TENANT';
   status: string;
   companyId?: number;
-  parentId?: number;
-  permissions: Permission[];
+  companyName?: string;
 }

@@ -1,0 +1,142 @@
+<app-layout>
+  <div class="flex items-center gap-3">
+    <button (click)="goBack()"
+      class="inline-flex items-center gap-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg px-4 py-2.5 transition-colors">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Torna all'elenco
+    </button>
+    <button *appHasPermission="'PAGE_FORMAZIONE_EDIT'" (click)="goEdit()"
+      class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg px-4 py-2.5 transition-colors">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+      Modifica
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="mt-6 space-y-6">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-6">
+          <div class="h-6 bg-gray-100 rounded animate-pulse w-48 mb-6"></div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (_ of [].constructor(6); track $index) {
+              <div>
+                <div class="h-3 bg-gray-100 rounded animate-pulse w-20 mb-2"></div>
+                <div class="h-5 bg-gray-100 rounded animate-pulse w-full"></div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (notFound()) {
+    <div class="mt-16 text-center">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-16 h-16 mx-auto text-gray-300 mb-4">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <h3 class="text-lg font-semibold text-gray-700 mb-1">Formazione non trovata</h3>
+      <p class="text-sm text-gray-400 mb-6">La formazione richiesta non esiste o è stata eliminata.</p>
+      <button (click)="goBack()"
+        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+        Torna all'elenco
+      </button>
+    </div>
+  }
+
+  @if (error(); as errMsg) {
+    <div class="mt-16 text-center">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-16 h-16 mx-auto text-red-300 mb-4">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <h3 class="text-lg font-semibold text-gray-700 mb-1">Errore di caricamento</h3>
+      <p class="text-sm text-red-500 mb-6">{{ errMsg }}</p>
+      <button (click)="ngOnInit()"
+        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+        Riprova
+      </button>
+    </div>
+  }
+
+  @if (formazione(); as f) {
+    <div class="mt-6 space-y-6">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+          <h3 class="text-lg font-semibold text-gray-800">{{ f.nomeCorso }}</h3>
+          @if (f.companyName) {
+            <p class="text-sm text-gray-500 mt-0.5">{{ f.companyName }}</p>
+          }
+          <div class="flex items-center gap-2 mt-1">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+              [class.bg-green-50]="isActive(f.status)"
+              [class.text-green-700]="isActive(f.status)"
+              [class.bg-yellow-50]="!isActive(f.status)"
+              [class.text-yellow-700]="!isActive(f.status)"
+            >{{ statusLabel(f.status) }}</span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+              [class.bg-blue-50]="f.stato === 'PIANIFICATO'"
+              [class.text-blue-700]="f.stato === 'PIANIFICATO'"
+              [class.bg-yellow-50]="f.stato === 'IN_CORSO'"
+              [class.text-yellow-700]="f.stato === 'IN_CORSO'"
+              [class.bg-green-50]="f.stato === 'COMPLETATO'"
+              [class.text-green-700]="f.stato === 'COMPLETATO'"
+              [class.bg-red-50]="f.stato === 'SCADUTO'"
+              [class.text-red-700]="f.stato === 'SCADUTO'"
+            >{{ statoLabel(f.stato) }}</span>
+          </div>
+        </div>
+        <div class="p-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @if (f.mansioneNome) {
+              <div>
+                <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Mansione</label>
+                <p class="text-sm text-gray-900">{{ f.mansioneNome }}</p>
+              </div>
+            }
+            @if (f.attestato) {
+              <div>
+                <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Attestato</label>
+                <p class="text-sm text-gray-900">{{ f.attestato }}</p>
+              </div>
+            }
+            @if (f.enteFormatore) {
+              <div>
+                <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Ente formatore</label>
+                <p class="text-sm text-gray-900">{{ f.enteFormatore }}</p>
+              </div>
+            }
+            @if (f.dataRilascio) {
+              <div>
+                <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Data rilascio</label>
+                <p class="text-sm text-gray-900">{{ f.dataRilascio }}</p>
+              </div>
+            }
+            @if (f.dataScadenza) {
+              <div>
+                <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Data scadenza</label>
+                <p class="text-sm text-gray-900">{{ f.dataScadenza }}</p>
+              </div>
+            }
+            @if (f.fileAllegato) {
+              <div>
+                <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">File allegato</label>
+                <p class="text-sm text-blue-600">{{ f.fileAllegato }}</p>
+              </div>
+            }
+            @if (f.validazioneIa) {
+              <div class="sm:col-span-2 lg:col-span-3">
+                <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Validazione IA</label>
+                <p class="text-sm text-gray-900 whitespace-pre-wrap">{{ f.validazioneIa }}</p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</app-layout>

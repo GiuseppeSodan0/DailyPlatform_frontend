@@ -1,0 +1,8 @@
+<app-layout>
+  <div class="flex items-center justify-between flex-wrap gap-4">
+    <h2 class="text-2xl font-semibold text-gray-800">Nuova mansione</h2>
+  </div>
+  <div class="mt-6 bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
+    <app-mansione-form mode="create" (saved)="onSaved()" (cancelled)="onCancelled()" />
+  </div>
+</app-layout>

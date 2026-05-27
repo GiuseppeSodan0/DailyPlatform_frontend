@@ -36,7 +36,7 @@ export class Companies implements OnInit {
 
   modalMode: 'edit' | null = null;
   selectedCompany: Company | null = null;
-  deleteTarget: Company | null = null;
+  deleteTarget = signal<Company | null>(null);
 
   ngOnInit(): void {
     this.loadCompanies();
@@ -72,15 +72,27 @@ export class Companies implements OnInit {
   }
 
   confirmDelete(company: Company): void {
-    this.deleteTarget = company;
+    this.deleteTarget.set(company);
   }
 
   executeDelete(): void {
-    if (!this.deleteTarget) return;
-    this.companyService.delete(this.deleteTarget.id).subscribe({
-      next: () => { this.toast.success('Azienda eliminata'); this.deleteTarget = null; this.loadCompanies(); },
-      error: (e) => { this.toast.error(e.error?.message || 'Errore eliminazione'); this.deleteTarget = null; },
+    if (!this.deleteTarget()) return;
+    this.companyService.delete(this.deleteTarget()!.id).subscribe({
+      next: () => { this.toast.success('Azienda eliminata'); this.deleteTarget.set(null); this.loadCompanies(); },
+      error: (e: HttpErrorResponse) => {
+        const errMsg = e.error?.message ?? '';
+        if (errMsg.includes('foreign key') || errMsg.includes('referenced from table') || errMsg.includes('violates')) {
+          this.toast.error('Impossibile eliminare l\'azienda: ci sono utenti collegati. Rimuovi o riassegna gli utenti prima di eliminare.');
+        } else {
+          this.toast.error(e.error?.message || `Errore eliminazione (${e.status})`);
+        }
+        this.deleteTarget.set(null);
+      },
     });
+  }
+
+  openDetail(company: Company): void {
+    this.router.navigate(['/companies', company.uuid]);
   }
 
   isActive(status: string): boolean {

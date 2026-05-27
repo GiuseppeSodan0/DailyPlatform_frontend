@@ -14,9 +14,9 @@
       <label class="block text-sm font-medium text-gray-700 mb-2">Ambito</label>
       <div class="flex gap-4">
         <label class="inline-flex items-center gap-2 cursor-pointer"
-          [class.opacity-50]="!isSystemAdmin()">
+          [class.opacity-50]="!canCreateGlobalRole()">
           <input type="radio" formControlName="scope" value="GLOBAL"
-            [disabled]="!isSystemAdmin()"
+            [disabled]="!canCreateGlobalRole()"
             class="text-blue-600 focus:ring-blue-500" />
           <span class="text-sm text-gray-700">Globale</span>
         </label>
@@ -26,7 +26,7 @@
           <span class="text-sm text-gray-700">Tenant</span>
         </label>
       </div>
-      @if (!isSystemAdmin()) {
+      @if (!canCreateGlobalRole()) {
         <p class="text-xs text-gray-400 mt-1">Solo gli amministratori di sistema possono creare ruoli globali.</p>
       }
     </div>
@@ -45,7 +45,7 @@
     }
   }
 
-  @if (mode() === 'edit' && role() && !isCompanyUser()) {
+  @if (mode() === 'edit' && role() && canViewAllCompanies()) {
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-1">Ambito</label>
       <p class="text-sm text-gray-600">
@@ -57,20 +57,6 @@
       </p>
     </div>
   }
-
-  <div>
-    <label class="block text-sm font-medium text-gray-700 mb-1">Ruolo padre <span class="text-gray-400 font-normal">(opzionale)</span></label>
-    <select formControlName="parentId"
-      class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all">
-      <option [ngValue]="null">Nessuno</option>
-      @for (parent of availableParentRoles(); track parent.id) {
-        <option [ngValue]="parent.id">{{ parent.name }}</option>
-      }
-    </select>
-    @if (roleForm.get('parentId')?.value) {
-      <p class="text-xs text-gray-400 mt-1">I permessi assegnabili saranno limitati a quelli del ruolo padre.</p>
-    }
-  </div>
 
   <div class="flex justify-end gap-3 pt-2">
     <button type="button" (click)="cancel()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Annulla</button>

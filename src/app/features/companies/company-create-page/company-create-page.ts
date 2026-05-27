@@ -12,8 +12,8 @@ import { CompanyForm } from '../company-form/company-form';
 export class CompanyCreatePage {
   private router = inject(Router);
 
-  onSaved(): void {
-    this.router.navigate(['/companies']);
+  onSaved(companyId: number): void {
+    this.router.navigate(['/sedi-operative', companyId, 'new']);
   }
 
   onCancelled(): void {

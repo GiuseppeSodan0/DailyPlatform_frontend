@@ -1,0 +1,90 @@
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="sm:col-span-2">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Nome corso <span class="text-red-500">*</span></label>
+      <input formControlName="nomeCorso" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder="Es: Corso antincendio" />
+      @if (form.get('nomeCorso')?.hasError('required') && form.get('nomeCorso')?.touched) { <p class="text-red-500 text-xs mt-1">Il nome del corso è obbligatorio</p> }
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Mansione <span class="text-red-500">*</span></label>
+      <select formControlName="mansioneId" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-white">
+        <option [ngValue]="0" disabled>Seleziona mansione</option>
+        @for (m of mansioni(); track m.id) {
+          <option [ngValue]="m.id">{{ m.nomeMansione }}</option>
+        }
+      </select>
+      @if (form.get('mansioneId')?.hasError('required') && form.get('mansioneId')?.touched) { <p class="text-red-500 text-xs mt-1">La mansione è obbligatoria</p> }
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Stato <span class="text-red-500">*</span></label>
+      <select formControlName="stato" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-white">
+        @for (s of statoOptions; track s) {
+          <option [ngValue]="s">{{ s === 'PIANIFICATO' ? 'Pianificato' : s === 'IN_CORSO' ? 'In corso' : s === 'COMPLETATO' ? 'Completato' : 'Scaduto' }}</option>
+        }
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Attestato</label>
+      <input formControlName="attestato" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder="Codice o nome attestato" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Ente formatore</label>
+      <input formControlName="enteFormatore" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder="Es: INAIL" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Data rilascio</label>
+      <input formControlName="dataRilascio" type="date" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Data scadenza</label>
+      <input formControlName="dataScadenza" type="date" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+    </div>
+
+    <div class="sm:col-span-2">
+      <label class="block text-sm font-medium text-gray-700 mb-1">File allegato</label>
+      <input type="file" (change)="onFileSelected($event)" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-colors" />
+    </div>
+
+    <div class="sm:col-span-2">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Validazione IA</label>
+      <textarea formControlName="validazioneIa" rows="3" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder="Esito validazione IA"></textarea>
+    </div>
+
+    <div class="sm:col-span-2">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Partecipanti</label>
+      @if (utenti().length === 0) {
+        <p class="text-sm text-gray-400">Caricamento utenti...</p>
+      }
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        @for (u of utenti(); track u.id) {
+          <label class="flex items-center gap-2 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors"
+            [class.border-blue-300]="isUtenteSelected(u.id)"
+            [class.bg-blue-50]="isUtenteSelected(u.id)">
+            <input type="checkbox" [checked]="isUtenteSelected(u.id)" (change)="toggleUtente(u.id)" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+            <span class="text-sm text-gray-700">{{ u.name }} {{ u.surname }}</span>
+          </label>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="flex justify-end gap-3 pt-4 mt-4 border-t border-gray-100">
+    <button type="button" (click)="cancel()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Annulla</button>
+    <button type="submit" [disabled]="form.invalid || saving() || uploading()" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 rounded-lg transition-colors">
+      @if (saving() || uploading()) {
+        <span class="flex items-center gap-2">
+          <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+          {{ uploading() ? 'Caricamento file...' : 'Salvataggio...' }}
+        </span>
+      } @else {
+        Salva
+      }
+    </button>
+  </div>
+</form>

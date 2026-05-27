@@ -1,3 +1,12 @@
+import { SedeOperativa } from './sede-operativa.model';
+
+export interface CompanyUserBrief {
+  id: number;
+  name: string;
+  surname: string;
+  email: string;
+}
+
 export interface Company {
   id: number;
   uid: string;
@@ -9,14 +18,14 @@ export interface Company {
   email: string;
   pec: string;
   telefono: string;
-  responsabile: string;
-  sedeOperativa: string;
+  responsabile: CompanyUserBrief | null;
+  sediOperative: SedeOperativa[];
   indirizzo: string;
   civico: number;
   settore: string;
-  medicoCompetente: string;
-  rspp: string;
-  consulente: string;
+  medicoCompetente: CompanyUserBrief | null;
+  rspp: CompanyUserBrief | null;
+  consulente: CompanyUserBrief | null;
   status: string;
   note: string;
   cap: string;

@@ -1,0 +1,6 @@
+export enum StatoFormazione {
+  PIANIFICATO = 'PIANIFICATO',
+  IN_CORSO = 'IN_CORSO',
+  COMPLETATO = 'COMPLETATO',
+  SCADUTO = 'SCADUTO',
+}

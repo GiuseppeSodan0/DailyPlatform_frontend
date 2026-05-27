@@ -10,6 +10,14 @@ export const permissionGuard = (route: ActivatedRouteSnapshot, state: RouterStat
     return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
   }
 
+  if (auth.isSuperAdmin()) {
+    return true;
+  }
+
+  if (state.url.startsWith('/company-settings')) {
+    return true;
+  }
+
   const requiredPermissions = route.data?.['permissions'] as string[] | undefined;
   const mode = (route.data?.['permissionMode'] as 'all' | 'any') ?? 'any';
 

@@ -8,10 +8,14 @@ import { UserService } from '../../core/services/user.service';
 import { UserImportExportService } from '../../core/services/user-import-export.service';
 import { CompanyService } from '../../core/services/company.service';
 import { RoleService } from '../../core/services/role.service';
+import { ProfileService } from '../../core/services/profile.service';
+import { SedeOperativaService } from '../../core/services/sede-operativa.service';
 import { ToastService } from '../../core/services/toast.service';
 import { User } from '../../models/user.model';
 import { Company } from '../../models/company.model';
 import { Role } from '../../models/role.model';
+import { Profile } from '../../models/profile.model';
+import { SedeOperativa } from '../../models/sede-operativa.model';
 import { HasPermissionDirective } from '../../shared/directives/has-permission.directive';
 import { ConfirmModal } from '../../shared/components/confirm-modal';
 import { ModalWrapper } from '../../shared/components/modal-wrapper';
@@ -29,12 +33,16 @@ export class Users implements OnInit {
   private importExportService = inject(UserImportExportService);
   private companyService = inject(CompanyService);
   private roleService = inject(RoleService);
+  private profileService = inject(ProfileService);
+  private sedeService = inject(SedeOperativaService);
   private toast = inject(ToastService);
   private fb = inject(FormBuilder);
 
   users = signal<User[]>([]);
   allRoles = signal<Role[]>([]);
+  allProfiles = signal<Profile[]>([]);
   allCompanies = signal<Company[]>([]);
+  allSedi = signal<SedeOperativa[]>([]);
 
   searchInput = '';
   searchQuery = signal('');
@@ -44,9 +52,13 @@ export class Users implements OnInit {
   loading = signal(false);
   loadingCompanies = signal(false);
   loadingRoles = signal(false);
+  loadingProfiles = signal(false);
+  loadingSedi = signal(false);
   saving = signal(false);
 
-  modalMode: 'roles' | null = null;
+  selectedSedeId = signal<number | null>(null);
+
+  modalMode: 'roles' | 'profiles' | 'sedi' | null = null;
   selectedUser: User | null = null;
   deleteTarget: User | null = null;
 
@@ -72,6 +84,10 @@ export class Users implements OnInit {
 
   roleAssignForm = this.fb.group({
     roleIds: [[] as number[]],
+  });
+
+  profileAssignForm = this.fb.group({
+    profileIds: [[] as number[]],
   });
 
   filteredUsers = computed(() => {
@@ -111,6 +127,7 @@ export class Users implements OnInit {
     this.loadUsers();
     this.loadCompanies();
     this.loadRoles();
+    this.loadProfiles();
   }
 
   private loadUsers(): void {
@@ -134,6 +151,14 @@ export class Users implements OnInit {
     this.roleService.getAll().subscribe({
       next: (r) => { this.allRoles.set(r); this.loadingRoles.set(false); },
       error: () => this.loadingRoles.set(false),
+    });
+  }
+
+  private loadProfiles(): void {
+    this.loadingProfiles.set(true);
+    this.profileService.getAll().subscribe({
+      next: (p) => { this.allProfiles.set(p); this.loadingProfiles.set(false); },
+      error: () => this.loadingProfiles.set(false),
     });
   }
 
@@ -182,9 +207,62 @@ export class Users implements OnInit {
     });
   }
 
+  openProfiles(user: User): void {
+    this.modalMode = 'profiles';
+    this.selectedUser = user;
+    this.profileAssignForm.setValue({
+      profileIds: this.allProfiles().filter((p) => user.profiles?.includes(p.code)).map((p) => p.id),
+    });
+  }
+
+  openSedi(user: User): void {
+    this.selectedUser = user;
+    this.modalMode = 'sedi';
+    this.selectedSedeId.set(null);
+    this.loadingSedi.set(true);
+
+    if (user.companyId) {
+      this.sedeService.getByCompanyId(user.companyId).subscribe({
+        next: (sedi) => {
+          this.allSedi.set(sedi.filter((s) => s.companyId === user.companyId));
+          this.loadingSedi.set(false);
+        },
+        error: () => {
+          this.allSedi.set([]);
+          this.loadingSedi.set(false);
+          this.toast.error('Errore nel caricamento delle sedi');
+        },
+      });
+    } else {
+      this.allSedi.set([]);
+      this.loadingSedi.set(false);
+    }
+  }
+
+  saveSedeAssignment(): void {
+    if (!this.selectedUser || this.selectedSedeId() === null) return;
+    this.saving.set(true);
+
+    this.userService.assignSedeToUser(this.selectedUser.id, this.selectedSedeId()!).subscribe({
+      next: () => {
+        this.toast.success('Sede assegnata con successo');
+        this.closeModal();
+        this.loadUsers();
+        this.saving.set(false);
+      },
+      error: (e: HttpErrorResponse) => {
+        const message = e.error?.message || (typeof e.error === 'string' ? e.error : null);
+        this.toast.error(message || "Errore durante l'assegnazione della sede");
+        this.saving.set(false);
+      },
+    });
+  }
+
   closeModal(): void {
     this.modalMode = null;
     this.selectedUser = null;
+    this.selectedSedeId.set(null);
+    this.allSedi.set([]);
   }
 
   saveRoles(): void {
@@ -194,6 +272,16 @@ export class Users implements OnInit {
     this.userService.addRoles(this.selectedUser.id, { roleIds }).subscribe({
       next: () => { this.toast.success('Ruoli assegnati con successo'); this.closeModal(); this.loadUsers(); this.saving.set(false); },
       error: (e: HttpErrorResponse) => { this.toast.error(e.error?.message || 'Errore nell\'assegnazione ruoli'); this.saving.set(false); },
+    });
+  }
+
+  saveProfiles(): void {
+    if (!this.selectedUser) return;
+    this.saving.set(true);
+    const profileIds = this.profileAssignForm.value.profileIds ?? [];
+    this.userService.addProfiles(this.selectedUser.id, { profileIds }).subscribe({
+      next: () => { this.toast.success('Profili assegnati con successo'); this.closeModal(); this.loadUsers(); this.saving.set(false); },
+      error: (e: HttpErrorResponse) => { this.toast.error(e.error?.message || 'Errore nell\'assegnazione profili'); this.saving.set(false); },
     });
   }
 
@@ -215,6 +303,14 @@ export class Users implements OnInit {
       ? current.filter((id) => id !== roleId)
       : [...current, roleId];
     this.roleAssignForm.setValue({ roleIds: updated });
+  }
+
+  toggleProfileInAssignForm(profileId: number): void {
+    const current = this.profileAssignForm.value.profileIds ?? [];
+    const updated = current.includes(profileId)
+      ? current.filter((id) => id !== profileId)
+      : [...current, profileId];
+    this.profileAssignForm.setValue({ profileIds: updated });
   }
 
   importing = signal(false);
@@ -296,6 +392,7 @@ export class Users implements OnInit {
   }
 
   readonly Math = Math;
+  readonly Number = Number;
 
   isActive(status: string): boolean {
     return status === 'ACTIVE';

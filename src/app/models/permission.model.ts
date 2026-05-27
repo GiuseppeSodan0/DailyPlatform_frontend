@@ -5,4 +5,6 @@ export interface Permission {
   description: string;
   type: string;
   status: string;
+  visible?: boolean;
+  inhibitor?: boolean;
 }

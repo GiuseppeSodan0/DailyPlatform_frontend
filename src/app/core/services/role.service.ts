@@ -9,18 +9,12 @@ export interface CreateRoleRequest {
   description?: string;
   scope?: string;
   companyId?: number;
-  parentId?: number;
 }
 
 export interface UpdateRoleRequest {
   name?: string;
   description?: string;
   status?: string;
-  parentId?: number | null;
-}
-
-export interface AssignPermissionsRequest {
-  permissionIds: number[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -49,13 +43,5 @@ export class RoleService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${environment.apiUrl}/roles/${id}`);
-  }
-
-  addPermissions(roleId: number, data: AssignPermissionsRequest): Observable<void> {
-    return this.http.post<void>(`${environment.apiUrl}/roles/${roleId}/permissions`, data);
-  }
-
-  removePermission(roleId: number, permissionId: number): Observable<void> {
-    return this.http.delete<void>(`${environment.apiUrl}/roles/${roleId}/permissions/${permissionId}`);
   }
 }

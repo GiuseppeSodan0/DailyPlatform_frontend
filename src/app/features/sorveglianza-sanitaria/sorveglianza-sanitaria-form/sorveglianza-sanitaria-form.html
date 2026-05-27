@@ -1,0 +1,89 @@
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Lavoratore <span class="text-red-500">*</span></label>
+      <select formControlName="fkLavoratore" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-white">
+        <option [ngValue]="0" disabled>Seleziona lavoratore</option>
+        @for (l of lavoratori(); track l.id) {
+          <option [ngValue]="l.id">{{ l.name }} {{ l.surname }}</option>
+        }
+      </select>
+      @if (form.get('fkLavoratore')?.hasError('required') && form.get('fkLavoratore')?.touched) { <p class="text-red-500 text-xs mt-1">Il lavoratore è obbligatorio</p> }
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Mansione <span class="text-red-500">*</span></label>
+      <select formControlName="fkMansione" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-white">
+        <option [ngValue]="0" disabled>Seleziona mansione</option>
+        @for (m of mansioni(); track m.id) {
+          <option [ngValue]="m.id">{{ m.nomeMansione }}</option>
+        }
+      </select>
+      @if (form.get('fkMansione')?.hasError('required') && form.get('fkMansione')?.touched) { <p class="text-red-500 text-xs mt-1">La mansione è obbligatoria</p> }
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Rischi sanitari</label>
+      <textarea formControlName="rischiSanitari" rows="3" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder="Rischi sanitari rilevati"></textarea>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Protocollo sanitario</label>
+      <textarea formControlName="protocolloSanitario" rows="3" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder="Protocollo sanitario"></textarea>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Visita prevista</label>
+      <textarea formControlName="visitaPrevista" rows="3" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder="Visita medica prevista"></textarea>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Visita effettuata</label>
+      <textarea formControlName="visitaEffettuata" rows="3" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder="Visita medica effettuata"></textarea>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Scadenza</label>
+      <input formControlName="scadenza" type="date" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Giudizio di idoneità <span class="text-red-500">*</span></label>
+      <select formControlName="giudizioIdoneita" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-white">
+        @for (g of giudizioOptions; track g) {
+          <option [ngValue]="g">{{ giudizioLabel(g) }}</option>
+        }
+      </select>
+      @if (form.get('giudizioIdoneita')?.hasError('required') && form.get('giudizioIdoneita')?.touched) { <p class="text-red-500 text-xs mt-1">Il giudizio è obbligatorio</p> }
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Medico competente</label>
+      <input formControlName="medicoCompetente" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder="Nome medico competente" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">File allegati riservati</label>
+      <input type="file" (change)="onFileSelected($event)" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-colors" />
+    </div>
+
+    <div class="sm:col-span-2">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Limitazioni / Prescrizioni</label>
+      <textarea formControlName="limitazioniPrescrizioni" rows="3" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" placeholder="Eventuali limitazioni o prescrizioni mediche"></textarea>
+    </div>
+  </div>
+
+  <div class="flex justify-end gap-3 pt-4 mt-4 border-t border-gray-100">
+    <button type="button" (click)="cancel()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Annulla</button>
+    <button type="submit" [disabled]="form.invalid || saving() || uploading()" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 rounded-lg transition-colors">
+      @if (saving() || uploading()) {
+        <span class="flex items-center gap-2">
+          <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+          {{ uploading() ? 'Caricamento file...' : 'Salvataggio...' }}
+        </span>
+      } @else {
+        Salva
+      }
+    </button>
+  </div>
+</form>

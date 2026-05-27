@@ -1,0 +1,184 @@
+<app-layout>
+  <div class="flex items-center gap-3">
+    <button (click)="goBack()"
+      class="inline-flex items-center gap-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg px-4 py-2.5 transition-colors">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Torna all'elenco
+    </button>
+    <button *appHasPermission="'PAGE_SEDE_OPERATIVA_EDIT'" (click)="goEdit()"
+      class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg px-4 py-2.5 transition-colors">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+      Modifica
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="mt-6 space-y-6">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-6">
+          <div class="h-6 bg-gray-100 rounded animate-pulse w-48 mb-6"></div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (_ of [].constructor(6); track $index) {
+              <div>
+                <div class="h-3 bg-gray-100 rounded animate-pulse w-20 mb-2"></div>
+                <div class="h-5 bg-gray-100 rounded animate-pulse w-full"></div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (notFound()) {
+    <div class="mt-16 text-center">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-16 h-16 mx-auto text-gray-300 mb-4">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <h3 class="text-lg font-semibold text-gray-700 mb-1">Sede operativa non trovata</h3>
+      <p class="text-sm text-gray-400 mb-6">La sede operativa richiesta non esiste o è stata eliminata.</p>
+      <button (click)="goBack()"
+        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+        Torna all'elenco
+      </button>
+    </div>
+  }
+
+  @if (error(); as errMsg) {
+    <div class="mt-16 text-center">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-16 h-16 mx-auto text-red-300 mb-4">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <h3 class="text-lg font-semibold text-gray-700 mb-1">Errore di caricamento</h3>
+      <p class="text-sm text-red-500 mb-6">{{ errMsg }}</p>
+      <button (click)="ngOnInit()"
+        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+        Riprova
+      </button>
+    </div>
+  }
+
+  @if (sede(); as s) {
+    <div class="mt-6 space-y-6">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+          <h3 class="text-lg font-semibold text-gray-800">{{ s.nomeSede }}</h3>
+          @if (s.companyName) {
+            <p class="text-sm text-gray-500 mt-0.5">{{ s.companyName }}</p>
+          }
+        </div>
+        <div class="p-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div>
+              <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Indirizzo</label>
+              <p class="text-sm text-gray-900">{{ s.indirizzo }}, {{ s.civico }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">CAP</label>
+              <p class="text-sm text-gray-900">{{ s.cap || '-' }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Comune</label>
+              <p class="text-sm text-gray-900">{{ s.comune }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Provincia</label>
+              <p class="text-sm text-gray-900">{{ s.provincia }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Regione</label>
+              <p class="text-sm text-gray-900">{{ s.regione || '-' }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Nazione</label>
+              <p class="text-sm text-gray-900">{{ s.nazione || '-' }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Responsabile</label>
+              <p class="text-sm text-gray-900">{{ s.responsabileSede || '-' }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Reparti</label>
+              <p class="text-sm text-gray-900">{{ s.reparti }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabella Lavoratori -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+          <h3 class="text-lg font-semibold text-gray-800">Lavoratori assegnati</h3>
+          <p class="text-sm text-gray-500 mt-0.5">{{ lavoratori().length }} lavoratori</p>
+        </div>
+
+        @if (loadingLavoratori()) {
+          <div class="p-6">
+            <div class="space-y-3">
+              @for (_ of [].constructor(3); track $index) {
+                <div class="h-10 bg-gray-100 rounded animate-pulse"></div>
+              }
+            </div>
+          </div>
+        } @else {
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gray-100 bg-gray-50">
+                  <th class="text-left px-6 py-3 font-medium text-gray-500">Nome e Cognome</th>
+                  <th class="text-left px-6 py-3 font-medium text-gray-500">Email</th>
+                  <th class="text-left px-6 py-3 font-medium text-gray-500">Ruoli</th>
+                  <th class="text-left px-6 py-3 font-medium text-gray-500">Reparto</th>
+                  <th class="text-left px-6 py-3 font-medium text-gray-500">Stato</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (lavoratore of lavoratori(); track lavoratore.id) {
+                  <tr class="border-b border-gray-50 hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4">
+                      <span class="text-sm font-medium text-gray-900">{{ lavoratore.name }} {{ lavoratore.surname }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-600">{{ lavoratore.email }}</td>
+                    <td class="px-6 py-4">
+                      <div class="flex flex-wrap gap-1">
+                        @for (role of lavoratore.roles; track role) {
+                          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">{{ role }}</span>
+                        }
+                        @if (!lavoratore.roles || lavoratore.roles.length === 0) {
+                          <span class="text-sm text-gray-400">-</span>
+                        }
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-600">{{ lavoratore.reparto || '-' }}</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                        [class.bg-green-50]="isActive(lavoratore.status)"
+                        [class.text-green-700]="isActive(lavoratore.status)"
+                        [class.bg-yellow-50]="!isActive(lavoratore.status)"
+                        [class.text-yellow-700]="!isActive(lavoratore.status)"
+                      >{{ statusLabel(lavoratore.status) }}</span>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="5" class="px-6 py-16 text-center">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-12 h-12 mx-auto text-gray-300 mb-4">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                      </svg>
+                      <p class="text-gray-400 text-sm">Nessun lavoratore assegnato a questa sede</p>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</app-layout>

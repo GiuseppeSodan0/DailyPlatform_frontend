@@ -8,41 +8,6 @@
     </button>
   </div>
 
-  <!-- Tabs -->
-  @if (!isCompanyUser()) {
-  <div class="mt-6 border-b border-gray-200">
-    <nav class="flex gap-6">
-      <button (click)="setActiveTab('all')"
-        class="pb-3 text-sm font-medium transition-colors border-b-2 -mb-px"
-        [class.border-blue-600]="activeTab() === 'all'"
-        [class.text-blue-600]="activeTab() === 'all'"
-        [class.border-transparent]="activeTab() !== 'all'"
-        [class.text-gray-500]="activeTab() !== 'all'"
-        [class.hover:text-gray-700]="activeTab() !== 'all'">
-        Tutti
-      </button>
-      <button (click)="setActiveTab('global')"
-        class="pb-3 text-sm font-medium transition-colors border-b-2 -mb-px"
-        [class.border-blue-600]="activeTab() === 'global'"
-        [class.text-blue-600]="activeTab() === 'global'"
-        [class.border-transparent]="activeTab() !== 'global'"
-        [class.text-gray-500]="activeTab() !== 'global'"
-        [class.hover:text-gray-700]="activeTab() !== 'global'">
-        Globali
-      </button>
-      <button (click)="setActiveTab('tenant')"
-        class="pb-3 text-sm font-medium transition-colors border-b-2 -mb-px"
-        [class.border-blue-600]="activeTab() === 'tenant'"
-        [class.text-blue-600]="activeTab() === 'tenant'"
-        [class.border-transparent]="activeTab() !== 'tenant'"
-        [class.text-gray-500]="activeTab() !== 'tenant'"
-        [class.hover:text-gray-700]="activeTab() !== 'tenant'">
-        Tenant
-      </button>
-    </nav>
-  </div>
-  }
-
   <div class="mt-6 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="overflow-x-auto">
       <table class="w-full text-sm">
@@ -50,7 +15,6 @@
           <tr class="border-b border-gray-100 bg-gray-50">
             <th class="text-left px-6 py-3 font-medium text-gray-500">Nome</th>
             <th class="text-left px-6 py-3 font-medium text-gray-500">Descrizione</th>
-            <th class="text-left px-6 py-3 font-medium text-gray-500">Permessi</th>
             <th class="text-left px-6 py-3 font-medium text-gray-500">Stato</th>
             <th class="text-right px-6 py-3 font-medium text-gray-500">Azioni</th>
           </tr>
@@ -60,12 +24,8 @@
             <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4">
                 <span class="font-medium text-gray-900">{{ role.name | noUnderscore }}</span>
-                @if (role.systemRole) {
-                  <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-50 text-purple-700">Sistema</span>
-                }
               </td>
               <td class="px-6 py-4 text-gray-600 max-w-[200px] truncate">{{ role.description || '-' }}</td>
-              <td class="px-6 py-4 text-gray-600">{{ role.permissions.length }} permessi</td>
               <td class="px-6 py-4">
                 @if (role.systemRole) {
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
@@ -73,7 +33,7 @@
                     [class.text-green-700]="isActive(role.status)"
                     [class.bg-yellow-50]="!isActive(role.status)"
                     [class.text-yellow-700]="!isActive(role.status)"
-                  >{{ role.status }}</span>
+                  >{{ role.status === 'ACTIVE' ? 'Attivo' : 'Inattivo' }}</span>
                 } @else {
                   <button *appHasPermission="'PAGE_ROLE_EDIT'" (click)="toggleStatus(role)"
                     class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -88,24 +48,21 @@
               </td>
               <td class="px-6 py-4 text-right">
                 <div class="flex items-center justify-end gap-1">
-                  <button *appHasPermission="'ACTION_ASSIGN_PERMISSION'" (click)="openPermissions(role)"
-                    class="p-2 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors" title="Assegna permessi">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  </button>
-                  <button *appHasPermission="'PAGE_ROLE_EDIT'" (click)="openEdit(role)"
-                    class="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="Modifica">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                  </button>
-
-                  <button *appHasPermission="'PAGE_ROLE_DELETE'" (click)="confirmDelete(role)"
-                    class="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Elimina">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                  </button>
+                  @if (!role.systemRole) {
+                    <button *appHasPermission="'PAGE_ROLE_EDIT'" (click)="openEdit(role)"
+                      class="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="Modifica">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </button>
+                    <button *appHasPermission="'PAGE_ROLE_DELETE'" (click)="confirmDelete(role)"
+                      class="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Elimina">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                    </button>
+                  }
                 </div>
               </td>
             </tr>
           } @empty {
-            <tr><td colspan="5" class="px-6 py-12 text-center text-gray-400">Nessun ruolo trovato</td></tr>
+            <tr><td colspan="4" class="px-6 py-12 text-center text-gray-400">Nessun ruolo trovato</td></tr>
           }
         </tbody>
       </table>
